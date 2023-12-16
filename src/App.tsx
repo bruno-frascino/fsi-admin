@@ -1,25 +1,25 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import LandingPage from './pages';
+import SyncBrandPage from './pages/sync/brand';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import SyncCategoryPage from './pages/sync/category';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" Component={LandingPage} />
+        <Route path="/sync/brand" Component={SyncBrandPage} />
+        <Route path="/sync/category" Component={SyncCategoryPage} />
+        {/* Define other routes here if needed */}
+        {/* For example: */}
+        {/* <Route path="/about" component={AboutPage} /> */}
+        {/* <Route path="/contact" component={ContactPage} /> */}
+
+        {/* A catch-all route for 404 Not Found */}
+        {/* <Route path="*" component={NotFoundPage} /> */}
+      </Routes>
+    </Router>
   );
 }
 
