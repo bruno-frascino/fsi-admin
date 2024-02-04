@@ -1,126 +1,131 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BrandSynchronizationDetails, FreshSBrand, DbSBrand, FreshTBrand, DbTBrand } from "../../../api/types";
-import { getBrandSynchronizationDetails } from "../../../api/api";
-import PageHeader from "../../../components/PageHeader";
+import { getBrandSynchronizationDetails, insertBrandDetails, updateBrandDetails } from "../../../api/api";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEdit } from '@fortawesome/free-solid-svg-icons'
+import { faBan, faArrowRight } from '@fortawesome/free-solid-svg-icons'
+import { faCircleCheck, faTrashCan } from '@fortawesome/free-regular-svg-icons'
+import BackLink from "../../../components/BackLink";
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import { useNavigate } from "react-router-dom";
+// import './brand.style.css'; // Import your CSS file
 
-const SyncBrandPage = () => {
+const SyncBrandPage: React.FC = () => {
   const [apiSmBrands, setApiSmBrands] = useState<FreshSBrand[] | null>(null);
   const [dbSmBrands, setDbSmBrands] = useState<DbSBrand[] | null>(null);
   const [apiTrayBrands, setApiTrayBrands] = useState<FreshTBrand[] | null>(null);
   const [dbTrayBrands, setDbTrayBrands] = useState<DbTBrand[] | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  useEffect(() => {
-    console.log('SyncBrandPage');
-
-    const fetchSyncData = async () => {
-      const response: BrandSynchronizationDetails = await getBrandSynchronizationDetails();
-      setApiSmBrands(response.apiSmBrands);
-      setDbSmBrands(response.dbSmBrands);
-      setApiTrayBrands(response.apiTrayBrands);
-      setDbTrayBrands(response.dbTrayBrands);
+  const navigate = useNavigate();
+  
+  const fetchSyncData = async () => {
+    const response: BrandSynchronizationDetails = await getBrandSynchronizationDetails();
+    if(!response) {
+      // redirect to an error page
+      navigate('/error');
+      return;
     }
 
-    fetchSyncData();
+    setApiSmBrands(response.apiSmBrands);
+    setDbSmBrands(response.dbSmBrands);
+    setApiTrayBrands(response.apiTrayBrands);
+    setDbTrayBrands(response.dbTrayBrands);
+
+  }
+
+  const isMounted = useRef(true);
+  useEffect(() => {
+
+    if (isMounted) {
+      fetchSyncData();
+    }
+
+    return () => {
+      isMounted.current = false;
+    }
 
   } , []);
 
+  const upsertBrand = async (brand: FreshSBrand) => {
+    // check exising brand
+    const existingBrand = dbSmBrands?.find((b) => b.id === brand.id);
+    try{
+      if (existingBrand) {
+        // update
+        await updateBrandDetails(brand);
+      } else {
+        // insert
+        await insertBrandDetails(brand);
+      }
+      // update table state
+      // await fetchSyncData();
+
+    } catch (error) {
+      // set an error message in the state
+      setErrorMsg('Error saving brand');
+    }
+}
+
   return (
     <>
-    <PageHeader />
+    <BackLink link="/" text="Back to Home Page"/>
+    {errorMsg && <div className="error">{errorMsg}</div>}
+    <div></div>
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-      <div>
-        <h2>API SM Brands</h2>
+      <div style={{ minHeight: '50vh', maxHeight: '50vh' }}>
+        <h2 className="my-table-h2">Market Place Brands</h2>
         {apiSmBrands && (
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {apiSmBrands.map((brand) => (
-              <tr key={brand.id}>
-                <td>{brand.id}</td>
-                <td>{brand.name}</td>
-                <td><FontAwesomeIcon icon={faEdit} /></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+          <DataTable className="my-datatable" value={apiSmBrands} header="SM Brands">
+            <Column field="id" header="ID"></Column>
+            <Column field="name" header="Name"></Column>
+            <Column field="action" header="Action" body={(rowData) => (
+              <button onClick={() => upsertBrand(rowData)}><FontAwesomeIcon icon={faArrowRight}/></button>
+              )} style={{width: '15%'}}></Column>
+          </DataTable>
+          )}
       </div>
-      <div>
-        <h2>DB SM Brands</h2>
+      <div style={{ minHeight: '50vh', maxHeight: '50vh' }}>
+        <h2 className="my-table-h2">FS Integrator Brands</h2>
         {dbSmBrands && (
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {dbSmBrands.map((brand) => (
-              <tr key={brand.id}>
-                <td>{brand.id}</td>
-                <td>{brand.name}</td>
-                <td>{/* Action goes here */}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+          <DataTable className="my-datatable" value={dbSmBrands} header="SM Brands">
+            <Column field="id" header="ID"></Column>
+            <Column field="name" header="Name"></Column>
+            <Column field="action" header="Action" body={(rowData) => (
+              <>
+              <button><FontAwesomeIcon icon={faCircleCheck}/></button>
+              <button><FontAwesomeIcon icon={faBan}/></button>
+              <button><FontAwesomeIcon icon={faTrashCan}/></button>
+              </>
+              )} style={{width: '20%'}}></Column>
+          </DataTable>
+        )}
       </div>
-      <div>
-        <h2>API Tray Brands</h2>
+      <div style={{ minHeight: '50vh', maxHeight: '50vh' }}>
         {apiTrayBrands && (
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Brand</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {apiTrayBrands.map((brand) => (
-              <tr key={brand.id}>
-                <td>{brand.id}</td>
-                <td>{brand.brand}</td>
-                <td><FontAwesomeIcon icon={faEdit} /></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+          <DataTable className="my-datatable" value={apiTrayBrands} header="Tray Brands">
+            <Column field="id" header="ID"></Column>
+            <Column field="brand" header="Brand"></Column>
+            <Column field="action" header="Action" body={(rowData) => (
+              <button onClick={() => upsertBrand(rowData)}><FontAwesomeIcon icon={faArrowRight}/></button>
+              )} style={{width: '15%'}}></Column>
+          </DataTable>
+        )}
       </div>
-      <div>
-        <h2>DB Tray Brands</h2>
+      <div style={{ minHeight: '50vh', maxHeight: '50vh' }}>
         {dbTrayBrands && (
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Brand</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {dbTrayBrands.map((brand) => (
-              <tr key={brand.id}>
-                <td>{brand.id}</td>
-                <td>{brand.brand}</td>
-                <td>{/* Action goes here */}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+          <DataTable className="my-datatable" value={dbTrayBrands} header="Tray Brands">
+            <Column field="id" header="ID"></Column>
+            <Column field="brand" header="Brand"></Column>
+            <Column field="action" header="Action" body={(rowData) => (
+              <>
+              <button><FontAwesomeIcon icon={faCircleCheck}/></button>
+              <button><FontAwesomeIcon icon={faBan}/></button>
+              <button><FontAwesomeIcon icon={faTrashCan}/></button>
+              </>
+              )} style={{width: '20%'}}></Column>
+          </DataTable>
+        )}
       </div>
     </div>
     </>
