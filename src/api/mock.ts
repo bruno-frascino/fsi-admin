@@ -1,4 +1,4 @@
-import { BrandSynchronizationDetails } from "./types";
+import { BrandSynchronizationDetails, CategorySynchronizationDetails, FreshSCategory, FreshTCategory, Thumbs, Image, UrlType, DbSCategory, DbTCategory } from "./types";
 
 export const mockBrandSyncDetails: BrandSynchronizationDetails = {
   apiSmBrands: [
@@ -29,4 +29,80 @@ export const mockBrandSyncDetails: BrandSynchronizationDetails = {
     { id: 19, slug: 'levi-strauss-co', brand: 'Levi Strauss & Co.', createDate: '2022-01-01', updateDate: '2022-01-02', active: 1 },
     { id: 20, slug: 'adidas', brand: 'Adidas', createDate: '2022-01-01', updateDate: '2022-01-02', active: 1 },
   ],
+};
+
+const mockUrlType: UrlType = {
+  http: 'http://example.com',
+  https: 'https://example.com',
+};
+
+const mockThumbs: Thumbs = {
+  '30': mockUrlType,
+  '90': mockUrlType,
+  '180': mockUrlType,
+};
+
+const mockImage: Image = {
+  http: 'http://example.com',
+  https: 'https://example.com',
+  thumbs: mockThumbs,
+};
+
+const mockFreshTCategory: FreshTCategory = {
+  id: 1,
+  parent_id: 0,
+  name: 'Fresh T Category',
+  small_description: 'Fresh T Category Description',
+  Images: [mockImage],
+  slug: 'fresh-t-category',
+};
+
+const mockStoredTCategory: DbTCategory = {
+  id: 1,
+  parentId: 0,
+  name: 'Stored T Category',
+  smallDescription: 'Stored T Category Description',
+  slug: 'stored-t-category',
+  createDate: '2022-01-01',
+  updateDate: '2022-01-02',
+  active: 1,
+};
+
+const mockFreshSCategory: FreshSCategory = {
+  id: 1,
+  parent_id: 0,
+  referenceCode: 'fresh-s-category',
+  name: 'Fresh S Category',
+  slug: 'fresh-s-category',
+  seo_title: 'Fresh S Category SEO Title',
+  seo_description: 'Fresh S Category SEO Description',
+  seo_keywords: 'Fresh, S, Category, SEO, Keywords',
+  seo_h1: 'Fresh S Category SEO H1',
+  description: 'Fresh S Category Description',
+  image_url: 'http://example.com',
+  active: true,
+};
+
+const mockStoredSCategory: DbSCategory = {
+  id: 1,
+  parentId: 0,
+  referenceCode: 'stored-s-category',
+  name: 'Stored S Category',
+  slug: 'stored-s-category',
+  seoTitle: 'Stored S Category SEO Title',
+  seoDescription: 'Stored S Category SEO Description',
+  seoKeywords: 'Stored, S, Category, SEO, Keywords',
+  seoH1: 'Stored S Category SEO H1',
+  description: 'Stored S Category Description',
+  imageUrl: 'http://example.com',
+  createDate: '2022-01-01',
+  updateDate: '2022-01-02',
+  active: 1,
+};
+
+export const mockCategorySynchronizationDetails: CategorySynchronizationDetails = {
+  apiSmCategories: [mockFreshSCategory],
+  dbSmCategories: [mockStoredSCategory],
+  apiTrayCategories: [mockFreshTCategory],
+  dbTrayCategories: [mockStoredTCategory],
 };
