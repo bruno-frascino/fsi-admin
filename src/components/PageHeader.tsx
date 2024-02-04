@@ -2,17 +2,19 @@ import { useMediaQuery } from 'react-responsive';
 import styled from 'styled-components';
 
 const PageHeader = () => {
-
   const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1224px)' });
 
   return (
     <Header>
       <Logo src="https://s3.us-east-1.amazonaws.com/farmershop.smserver.com.br/logo.jpg" alt="Farmer Shop Logo" />
-      {isTabletOrMobile ? <TitleMobile>Farmer Shop Integrator Manager</TitleMobile> : <Title>Farmer Shop Integrator Manager</Title>}
+      {isTabletOrMobile ? (
+        <TitleMobile>Farmer Shop Integrator Manager</TitleMobile>
+      ) : (
+        <Title>Farmer Shop Integrator Manager</Title>
+      )}
     </Header>
-  )
-  
-}
+  );
+};
 
 const Header = styled.div`
   display: flex;
@@ -39,4 +41,3 @@ const TitleMobile = styled(Title)`
 `;
 
 export default PageHeader;
-
