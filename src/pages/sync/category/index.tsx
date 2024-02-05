@@ -40,7 +40,7 @@ const SyncCategoryPage: React.FC = () => {
 
   const isMounted = useRef(true);
   useEffect(() => {
-    if (isMounted) {
+    if (isMounted.current) {
       fetchSyncData();
     }
 
