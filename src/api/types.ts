@@ -1,6 +1,17 @@
+//TOO delete this one once calls simplified
 export interface BrandSynchronizationDetails {
   apiSmBrands: FreshSBrand[];
   dbSmBrands: DbSBrand[],
+  apiTrayBrands: FreshTBrand[],
+  dbTrayBrands: DbTBrand[],
+}
+
+export interface SmBrandSyncDetails {
+  apiSmBrands: FreshSBrand[];
+  dbSmBrands: DbSBrand[],
+}
+
+export interface TrayBrandSyncDetails {
   apiTrayBrands: FreshTBrand[],
   dbTrayBrands: DbTBrand[],
 }
@@ -12,8 +23,19 @@ export interface CategorySynchronizationDetails {
   dbTrayCategories: DbTCategory[];
 }
 
+export interface SmCategorySyncDetails {
+  apiSmCategories: FreshSCategory[];
+  dbSmCategories: DbSCategory[];
+}
+
+export interface TrayCategorySyncDetails {
+  apiTrayCategories: FreshTCategory[];
+  dbTrayCategories: DbTCategory[];
+}
+
 export interface DbTCategory {
-  id: number;
+  id: number; // internal category id
+  categoryId: number; // external category id
   parentId: number;
   name: string;
   smallDescription: string;
@@ -48,7 +70,8 @@ export interface UrlType {
 }
 
 export interface DbSCategory {
-  id: number;
+  id: number; // internal category id
+  categoryId: number; // external category id
   parentId: number;
   referenceCode: string;
   name: string;
@@ -80,7 +103,8 @@ export interface FreshSCategory {
 }
 
 export interface DbTBrand {
-  id: number;
+  id: number; // internal brand id
+  brandId: number; // external brand id
   slug: string;
   brand: string;
   createDate: string;
@@ -104,7 +128,8 @@ export interface FreshSBrand {
 }
 
 export interface DbSBrand {
-  id: number;
+  id: number; // internal brand id
+  brandId: number; // external brand id
   name: string;
   slug: string;
   seoTitle: string;

@@ -9,11 +9,11 @@ export const mockBrandSyncDetails: BrandSynchronizationDetails = {
     { id: 5, name: 'Chanel', slug: 'chanel', seo_title: 'Chanel Title', seo_description: 'Chanel Description', seo_keywords: 'Chanel, Clothes' },
   ],
   dbSmBrands: [
-    { id: 6, name: 'Versace', slug: 'versace', seoTitle: 'Versace Title', seoDescription: 'Versace Description', seoKeywords: 'Versace, Clothes', createDate: '2022-01-01', updateDate: '2022-01-02', active: 1 },
-    { id: 7, name: 'Armani', slug: 'armani', seoTitle: 'Armani Title', seoDescription: 'Armani Description', seoKeywords: 'Armani, Clothes', createDate: '2022-01-01', updateDate: '2022-01-02', active: 1 },
-    { id: 8, name: 'Dolce & Gabbana', slug: 'dolce-gabbana', seoTitle: 'Dolce & Gabbana Title', seoDescription: 'Dolce & Gabbana Description', seoKeywords: 'Dolce & Gabbana, Clothes', createDate: '2022-01-01', updateDate: '2022-01-02', active: 1 },
-    { id: 9, name: 'Burberry', slug: 'burberry', seoTitle: 'Burberry Title', seoDescription: 'Burberry Description', seoKeywords: 'Burberry, Clothes', createDate: '2022-01-01', updateDate: '2022-01-02', active: 1 },
-    { id: 10, name: 'Dior', slug: 'dior', seoTitle: 'Dior Title', seoDescription: 'Dior Description', seoKeywords: 'Dior, Clothes', createDate: '2022-01-01', updateDate: '2022-01-02', active: 1 },
+    { id: 6, brandId: 23, name: 'Versace', slug: 'versace', seoTitle: 'Versace Title', seoDescription: 'Versace Description', seoKeywords: 'Versace, Clothes', createDate: '2022-01-01', updateDate: '2022-01-02', active: 1 },
+    { id: 7, brandId: 24, name: 'Armani', slug: 'armani', seoTitle: 'Armani Title', seoDescription: 'Armani Description', seoKeywords: 'Armani, Clothes', createDate: '2022-01-01', updateDate: '2022-01-02', active: 1 },
+    { id: 8, brandId: 25, name: 'Dolce & Gabbana', slug: 'dolce-gabbana', seoTitle: 'Dolce & Gabbana Title', seoDescription: 'Dolce & Gabbana Description', seoKeywords: 'Dolce & Gabbana, Clothes', createDate: '2022-01-01', updateDate: '2022-01-02', active: 1 },
+    { id: 9, brandId: 26, name: 'Burberry', slug: 'burberry', seoTitle: 'Burberry Title', seoDescription: 'Burberry Description', seoKeywords: 'Burberry, Clothes', createDate: '2022-01-01', updateDate: '2022-01-02', active: 1 },
+    { id: 10, brandId: 27, name: 'Dior', slug: 'dior', seoTitle: 'Dior Title', seoDescription: 'Dior Description', seoKeywords: 'Dior, Clothes', createDate: '2022-01-01', updateDate: '2022-01-02', active: 1 },
   ],
   apiTrayBrands: [
     { id: 11, slug: 'ralph-lauren', brand: 'Ralph Lauren' },
@@ -23,11 +23,11 @@ export const mockBrandSyncDetails: BrandSynchronizationDetails = {
     { id: 15, slug: 'zara', brand: 'Zara' },
   ],
   dbTrayBrands: [
-    { id: 16, slug: 'h&m', brand: 'H&M', createDate: '2022-01-01', updateDate: '2022-01-02', active: 1 },
-    { id: 17, slug: 'uniqlo', brand: 'Uniqlo', createDate: '2022-01-01', updateDate: '2022-01-02', active: 1 },
-    { id: 18, slug: 'gap', brand: 'Gap', createDate: '2022-01-01', updateDate: '2022-01-02', active: 1 },
-    { id: 19, slug: 'levi-strauss-co', brand: 'Levi Strauss & Co.', createDate: '2022-01-01', updateDate: '2022-01-02', active: 1 },
-    { id: 20, slug: 'adidas', brand: 'Adidas', createDate: '2022-01-01', updateDate: '2022-01-02', active: 1 },
+    { id: 16, brandId: 23, slug: 'h&m', brand: 'H&M', createDate: '2022-01-01', updateDate: '2022-01-02', active: 1 },
+    { id: 17, brandId: 24, slug: 'uniqlo', brand: 'Uniqlo', createDate: '2022-01-01', updateDate: '2022-01-02', active: 1 },
+    { id: 18, brandId: 25, slug: 'gap', brand: 'Gap', createDate: '2022-01-01', updateDate: '2022-01-02', active: 1 },
+    { id: 19, brandId: 26, slug: 'levi-strauss-co', brand: 'Levi Strauss & Co.', createDate: '2022-01-01', updateDate: '2022-01-02', active: 1 },
+    { id: 20, brandId: 27, slug: 'adidas', brand: 'Adidas', createDate: '2022-01-01', updateDate: '2022-01-02', active: 1 },
   ],
 };
 
@@ -59,6 +59,7 @@ const mockFreshTCategory: FreshTCategory = {
 
 const mockStoredTCategory: DbTCategory = {
   id: 1,
+  categoryId: 1,
   parentId: 0,
   name: 'Stored T Category',
   smallDescription: 'Stored T Category Description',
@@ -85,6 +86,7 @@ const mockFreshSCategory: FreshSCategory = {
 
 const mockStoredSCategory: DbSCategory = {
   id: 1,
+  categoryId: 1,
   parentId: 0,
   referenceCode: 'stored-s-category',
   name: 'Stored S Category',

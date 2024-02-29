@@ -23,21 +23,34 @@ button {
 .my-table-h2 {
   background-color: rgb(240, 240, 240);
   margin-top: 5px;
-  margin-bottom: 5px; 
+  margin-bottom: 5px;
   text-align: center;
   vertical-align: middle;
   height: 50px;
   line-height: 50px;
 }
 
-.my-datatable .p-datatable-thead > tr > th {
+.my-datatable .p-datatable-thead>tr>th {
   font-weight: bold;
   background-color: var(--t-header-color);
-  height: 40px; /* adjust as needed */
+  height: 40px;
+  /* adjust as needed */
 }
 
 .my-datatable .p-datatable-header {
   font-weight: bold;
   font-size: 1.2em;
   text-align: center;
+}
+
+.p-inline-message-error {
+  color: red;
+  line-height: 40px;
+  background-color: #FFC1C1;
+  padding: 0 10px;
+  border-radius: 10px;
+}
+
+.p-inline-message-text {
+  padding-left: 5px;
 }

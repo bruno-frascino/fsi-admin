@@ -13,18 +13,22 @@ import {
   FreshSCategory,
   FreshTCategory,
 } from '../../../api/types';
+import Spinner from '../../../components/Spinner';
 
-const SyncCategoryPage: React.FC = () => {
+const CategorySyncPage: React.FC = () => {
   const [apiSmCategories, setApiSmCategories] = useState<FreshSCategory[] | null>(null);
   const [dbSmCategories, setDbSmCategories] = useState<DbSCategory[] | null>(null);
   const [apiTrayCategories, setApiTrayCategories] = useState<FreshTCategory[] | null>(null);
   const [dbTrayCategories, setDbTrayCategories] = useState<DbTCategory[] | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
   const fetchSyncData = async () => {
+    setIsLoading(true);
     const response: CategorySynchronizationDetails = await getCategorySynchronizationDetails();
+    setIsLoading(false);
 
     if (!response) {
       // redirect to an error page
@@ -73,100 +77,102 @@ const SyncCategoryPage: React.FC = () => {
       <BackLink link="/" text="Back to Home Page" />
       {errorMsg && <div className="error">{errorMsg}</div>}
       <div></div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-        <div style={{ minHeight: '50vh', maxHeight: '50vh' }}>
-          <h2 className="my-table-h2">Market Place Categories</h2>
-          {apiSmCategories && (
-            <DataTable className="my-datatable" value={apiSmCategories} header="SM Categories">
-              <Column field="id" header="ID"></Column>
-              <Column field="name" header="Name"></Column>
-              <Column
-                field="action"
-                header="Action"
-                body={(rowData) => (
-                  <button onClick={() => upsertCategory(rowData)}>
-                    <FontAwesomeIcon icon={faArrowRight} />
-                  </button>
-                )}
-                style={{ width: '15%' }}
-              ></Column>
-            </DataTable>
-          )}
+      {isLoading ? <Spinner /> :
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+          <div style={{ minHeight: '50vh', maxHeight: '50vh' }}>
+            <h2 className="my-table-h2">Market Place Categories</h2>
+            {apiSmCategories && (
+              <DataTable className="my-datatable" value={apiSmCategories} header="SM Categories">
+                <Column field="id" header="ID"></Column>
+                <Column field="name" header="Name"></Column>
+                <Column
+                  field="action"
+                  header="Action"
+                  body={(rowData) => (
+                    <button onClick={() => upsertCategory(rowData)}>
+                      <FontAwesomeIcon icon={faArrowRight} />
+                    </button>
+                  )}
+                  style={{ width: '15%' }}
+                ></Column>
+              </DataTable>
+            )}
+          </div>
+          <div style={{ minHeight: '50vh', maxHeight: '50vh' }}>
+            <h2 className="my-table-h2">FS Integrator Categories</h2>
+            {dbSmCategories && (
+              <DataTable className="my-datatable" value={dbSmCategories} header="SM Categories">
+                <Column field="categoryId" header="ID"></Column>
+                <Column field="name" header="Name"></Column>
+                <Column
+                  field="action"
+                  header="Action"
+                  body={(rowData) => (
+                    <>
+                      <button>
+                        <FontAwesomeIcon icon={faCircleCheck} />
+                      </button>
+                      <button>
+                        <FontAwesomeIcon icon={faBan} />
+                      </button>
+                      <button>
+                        <FontAwesomeIcon icon={faTrashCan} />
+                      </button>
+                    </>
+                  )}
+                  style={{ width: '20%' }}
+                ></Column>
+              </DataTable>
+            )}
+          </div>
+          <div style={{ minHeight: '50vh', maxHeight: '50vh' }}>
+            {apiTrayCategories && (
+              <DataTable className="my-datatable" value={apiTrayCategories} header="Tray Categories">
+                <Column field="id" header="ID"></Column>
+                <Column field="name" header="Name"></Column>
+                <Column
+                  field="action"
+                  header="Action"
+                  body={(rowData) => (
+                    <button onClick={() => upsertCategory(rowData)}>
+                      <FontAwesomeIcon icon={faArrowRight} />
+                    </button>
+                  )}
+                  style={{ width: '15%' }}
+                ></Column>
+              </DataTable>
+            )}
+          </div>
+          <div style={{ minHeight: '50vh', maxHeight: '50vh' }}>
+            {dbTrayCategories && (
+              <DataTable className="my-datatable" value={dbTrayCategories} header="Tray Categories">
+                <Column field="categoryId" header="ID"></Column>
+                <Column field="name" header="Name"></Column>
+                <Column
+                  field="action"
+                  header="Action"
+                  body={(rowData) => (
+                    <>
+                      <button>
+                        <FontAwesomeIcon icon={faCircleCheck} />
+                      </button>
+                      <button>
+                        <FontAwesomeIcon icon={faBan} />
+                      </button>
+                      <button>
+                        <FontAwesomeIcon icon={faTrashCan} />
+                      </button>
+                    </>
+                  )}
+                  style={{ width: '20%' }}
+                ></Column>
+              </DataTable>
+            )}
+          </div>
         </div>
-        <div style={{ minHeight: '50vh', maxHeight: '50vh' }}>
-          <h2 className="my-table-h2">FS Integrator Categories</h2>
-          {dbSmCategories && (
-            <DataTable className="my-datatable" value={dbSmCategories} header="SM Categories">
-              <Column field="id" header="ID"></Column>
-              <Column field="name" header="Name"></Column>
-              <Column
-                field="action"
-                header="Action"
-                body={(rowData) => (
-                  <>
-                    <button>
-                      <FontAwesomeIcon icon={faCircleCheck} />
-                    </button>
-                    <button>
-                      <FontAwesomeIcon icon={faBan} />
-                    </button>
-                    <button>
-                      <FontAwesomeIcon icon={faTrashCan} />
-                    </button>
-                  </>
-                )}
-                style={{ width: '20%' }}
-              ></Column>
-            </DataTable>
-          )}
-        </div>
-        <div style={{ minHeight: '50vh', maxHeight: '50vh' }}>
-          {apiTrayCategories && (
-            <DataTable className="my-datatable" value={apiTrayCategories} header="Tray Categories">
-              <Column field="id" header="ID"></Column>
-              <Column field="name" header="Name"></Column>
-              <Column
-                field="action"
-                header="Action"
-                body={(rowData) => (
-                  <button onClick={() => upsertCategory(rowData)}>
-                    <FontAwesomeIcon icon={faArrowRight} />
-                  </button>
-                )}
-                style={{ width: '15%' }}
-              ></Column>
-            </DataTable>
-          )}
-        </div>
-        <div style={{ minHeight: '50vh', maxHeight: '50vh' }}>
-          {dbTrayCategories && (
-            <DataTable className="my-datatable" value={dbTrayCategories} header="Tray Categories">
-              <Column field="id" header="ID"></Column>
-              <Column field="name" header="Name"></Column>
-              <Column
-                field="action"
-                header="Action"
-                body={(rowData) => (
-                  <>
-                    <button>
-                      <FontAwesomeIcon icon={faCircleCheck} />
-                    </button>
-                    <button>
-                      <FontAwesomeIcon icon={faBan} />
-                    </button>
-                    <button>
-                      <FontAwesomeIcon icon={faTrashCan} />
-                    </button>
-                  </>
-                )}
-                style={{ width: '20%' }}
-              ></Column>
-            </DataTable>
-          )}
-        </div>
-      </div>
+      }
     </>
   );
 };
 
-export default SyncCategoryPage;
+export default CategorySyncPage;
