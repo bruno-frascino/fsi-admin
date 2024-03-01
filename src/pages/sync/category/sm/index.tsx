@@ -139,6 +139,13 @@ const SmCategorySyncPage = () => {
               <DataTable className="my-datatable" value={apiSmCategories}>
                 <Column field="id" header="ID"></Column>
                 <Column field="name" header="Name"></Column>
+                <Column field="parent_id" header="Parent"></Column>
+                <Column field="active" header="Active"
+                  body={(rowData) => {
+                    return rowData.active ?
+                      <FontAwesomeIcon icon={faCircleCheck} />
+                      : <FontAwesomeIcon icon={faBan} />;
+                  }}></Column>
                 <Column
                   field="action"
                   header="Action"
@@ -158,6 +165,7 @@ const SmCategorySyncPage = () => {
               <DataTable className="my-datatable" value={dbSmCategories}>
                 <Column field="categoryId" header="ID"></Column>
                 <Column field="name" header="Name"></Column>
+                <Column field="parentId" header="Parent"></Column>
                 <Column field="active" header="Active" style={{ width: '15%' }}
                   body={(rowData) => {
                     return rowData.active ?
