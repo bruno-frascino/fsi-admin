@@ -100,6 +100,7 @@ const mockStoredSCategory: DbSCategory = {
   createDate: '2022-01-01',
   updateDate: '2022-01-02',
   active: 1,
+  fsActive: 1,
 };
 
 export const mockCategorySynchronizationDetails: CategorySynchronizationDetails = {

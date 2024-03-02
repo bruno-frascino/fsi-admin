@@ -84,7 +84,8 @@ export interface DbSCategory {
   imageUrl: string;
   createDate: string;
   updateDate?: string;
-  active: number;
+  active: 0 | 1;
+  fsActive: 0 | 1;
 }
 
 export interface FreshSCategory {
