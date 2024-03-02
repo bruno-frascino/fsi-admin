@@ -47,7 +47,7 @@ const SmCategorySyncPage = () => {
   const updateStatus = async (dbCategory: DbSCategory) => {
     setErrorMsg(null);
     // switch status
-    dbCategory.active = dbCategory.active === 1 ? 0 : 1;
+    dbCategory.fsActive = dbCategory.fsActive === 1 ? 0 : 1;
     const updatedDbCategory = await updateSCategoryStatus(dbCategory);
     if (updatedDbCategory) {
       // replace element from the array with the updated one
@@ -168,7 +168,7 @@ const SmCategorySyncPage = () => {
                 <Column field="parentId" header="Parent"></Column>
                 <Column field="active" header="Active" style={{ width: '15%' }}
                   body={(rowData) => {
-                    return rowData.active ?
+                    return rowData.fsActive ?
                       <FontAwesomeIcon icon={faCircleCheck} />
                       : <FontAwesomeIcon icon={faBan} />;
                   }}></Column>
@@ -177,7 +177,7 @@ const SmCategorySyncPage = () => {
                   header="Action"
                   body={(rowData) => (
                     <>
-                      {rowData.active === 1 ? (
+                      {rowData.fsActive === 1 ? (
                         <button onClick={() => updateStatus(rowData)}>
                           <FontAwesomeIcon icon={faBan} />
                         </button>
