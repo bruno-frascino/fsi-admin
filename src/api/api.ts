@@ -137,7 +137,6 @@ export async function insertTBrandDetails(apiBrand: FreshTBrand) {
 
 export async function updateTBrandDetails(apiBrand: FreshTBrand) {
   try {
-    log.info(`Updating tBrand details with: ${JSON.stringify(apiBrand)}`);
     const dbBrand = await axios.put(`${apiUrl}/brand/tray`, apiBrand);
     return dbBrand.data;
   } catch (error) {
