@@ -60,9 +60,9 @@ const TrayBrandSyncPage: React.FC = () => {
           // replace element from the array with the updated one
           const index = dbTrayBrands?.findIndex((dbBrand) => dbBrand.brandId === updatedDbBrand.brandId);
           if (index !== undefined && index !== null && index !== -1) {
-            let newDbTrayBrands = dbTrayBrands?.splice(index, 1);
-            if (updatedDbBrand && newDbTrayBrands) {
-              newDbTrayBrands = [...newDbTrayBrands, updatedDbBrand];
+            dbTrayBrands?.splice(index, 1);
+            if (updatedDbBrand && dbTrayBrands) {
+              const newDbTrayBrands = [...dbTrayBrands, updatedDbBrand];
               setDbTrayBrands(newDbTrayBrands.sort((a, b) => a.brandId - b.brandId));
               return;
             }
