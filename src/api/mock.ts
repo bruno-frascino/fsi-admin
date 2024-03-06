@@ -52,8 +52,12 @@ const mockFreshTCategory: FreshTCategory = {
   id: 1,
   parent_id: 0,
   name: 'Fresh T Category',
+  description: 'Fresh T Category Description',
   small_description: 'Fresh T Category Description',
   Images: [mockImage],
+  order: 1,
+  has_product: 1,
+  active: 1,
   slug: 'fresh-t-category',
 };
 
@@ -67,6 +71,7 @@ const mockStoredTCategory: DbTCategory = {
   createDate: '2022-01-01',
   updateDate: '2022-01-02',
   active: 1,
+  fsActive: 1,
 };
 
 const mockFreshSCategory: FreshSCategory = {

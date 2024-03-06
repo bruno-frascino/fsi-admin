@@ -1,7 +1,7 @@
 import axios from 'axios';
 import log from '../logger';
 import { mockBrandSyncDetails, mockCategorySynchronizationDetails } from './mock';
-import { DbSBrand, DbSCategory, DbTBrand, FreshSBrand, FreshSCategory, FreshTBrand } from './types';
+import { DbSBrand, DbSCategory, DbTBrand, DbTCategory, FreshSBrand, FreshSCategory, FreshTBrand, FreshTCategory } from './types';
 
 const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 const isStandAlone = (process.env.REACT_APP_IS_STAND_ALONE && process.env.REACT_APP_IS_STAND_ALONE === 'true') || false;
@@ -54,6 +54,18 @@ export async function getTrayBrandSyncDetails(): Promise<any> {
   }
 }
 
+export async function getTrayCategorySyncDetails(): Promise<any> {
+  try {
+    // if (isStandAlone) return mockBrandSyncDetails;
+
+    const response = await axios.get(`${apiUrl}/synchronization/tray/category`);
+    return response.data;
+  } catch (error) {
+    log.error(`Failed to get Tray categories synchronization details with error: ${error}`);
+    return undefined;
+  }
+}
+
 export async function insertSBrandDetails(apiBrand: FreshSBrand) {
   try {
     const dbBrand = await axios.post(`${apiUrl}/brand/sm`, apiBrand);
@@ -69,6 +81,15 @@ export async function insertSCategoryDetails(apiCategory: FreshSCategory) {
     return dbCategory.data;
   } catch (error) {
     log.error(`Failed to insert sCategory details with error: ${error}`);
+  }
+}
+
+export async function insertTCategoryDetails(apiCategory: FreshTCategory) {
+  try {
+    const dbCategory = await axios.post(`${apiUrl}/category/tray`, apiCategory);
+    return dbCategory.data;
+  } catch (error) {
+    log.error(`Failed to insert TCategory details with error: ${error}`);
   }
 }
 
@@ -90,6 +111,15 @@ export async function updateSCategoryDetails(apiCategory: FreshSCategory) {
   }
 }
 
+export async function updateTCategoryDetails(apiCategory: FreshTCategory) {
+  try {
+    const dbCategory = await axios.put(`${apiUrl}/category/tray`, apiCategory);
+    return dbCategory.data;
+  } catch (error) {
+    log.error(`Failed to update tCategory details with error: ${error}`);
+  }
+}
+
 export async function updateSBrandStatus(dbSBrand: DbSBrand) {
   try {
     const updatedDbBrand = await axios.put(`${apiUrl}/brand/fsi-sm`, dbSBrand);
@@ -108,6 +138,15 @@ export async function updateSCategoryStatus(dbSCategory: DbSCategory) {
   }
 }
 
+export async function updateTCategoryStatus(dbTCategory: DbTCategory) {
+  try {
+    const updatedDbCategory = await axios.put(`${apiUrl}/category/fsi-tray`, dbTCategory);
+    return updatedDbCategory.data;
+  } catch (error) {
+    log.error(`Failed to update TCategory status with error: ${error}`);
+  }
+}
+
 export async function deleteSBrandDetails(id: number) {
   try {
     const result = await axios.delete(`${apiUrl}/brand/sm/${id}`);
@@ -123,6 +162,15 @@ export async function deleteSCategoryDetails(id: number) {
     return result.data > 0;
   } catch (error) {
     log.error(`Failed to delete sCategory details with error: ${error}`);
+  }
+}
+
+export async function deleteTCategoryDetails(id: number) {
+  try {
+    const result = await axios.delete(`${apiUrl}/category/tray/${id}`);
+    return result.data > 0;
+  } catch (error) {
+    log.error(`Failed to delete tCategory details with error: ${error}`);
   }
 }
 

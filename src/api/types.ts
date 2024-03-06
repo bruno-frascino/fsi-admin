@@ -43,14 +43,19 @@ export interface DbTCategory {
   createDate: string;
   updateDate?: string;
   active: number;
+  fsActive: number;
 }
 export interface FreshTCategory {
   id: number;
   parent_id: number;
   name: string;
+  description: string;
   small_description: string;
   Images?: Image[];
-  slug: string;
+  order: number;
+  has_product: number;
+  active: number;
+  slug?: string;
 }
 
 export interface Image {
