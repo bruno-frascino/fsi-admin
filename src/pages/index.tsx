@@ -15,12 +15,12 @@ const LandingPage = () => {
         <Main>
           <Column>
             <ColumnHeader title="Sync Center" icon={<FontAwesomeIcon icon={faRotate} />} backgroundColor="#f0f0f0" />
-            <ColumnItem title="Farmer Brand Sync" url="/sync/brand/sm" />
-            <ColumnItem title="Tray Brand Sync" url="/sync/brand/tray" />
-            <ColumnItem title="Farmer Tray Brand Sync" url="/sync/brand" />
-            <ColumnItem title="Farmer Categories Sync" url="/sync/category/sm" />
-            <ColumnItem title="Tray Categories Sync" url="/sync/category/tray" />
-            <ColumnItem title="Farmer Tray Categories Sync" url="/sync/category" />
+            <ColumnItem title="Farmer Brands" url="/sync/brand/sm" />
+            <ColumnItem title="Tray Brands" url="/sync/brand/tray" />
+            <ColumnItem title="Brand Map" url="/sync/brand" />
+            <ColumnItem title="Farmer Categories" url="/sync/category/sm" />
+            <ColumnItem title="Tray Categories" url="/sync/category/tray" />
+            <ColumnItem title="Categories Map" url="/sync/category" />
           </Column>
           <Column>
             <ColumnHeader title="Integration Center" icon="📁" backgroundColor="#f0f0f0" />
