@@ -1,6 +1,6 @@
 import axios from 'axios';
 import log from '../logger';
-import { mockBrandSyncDetails, mockCategorySynchronizationDetails } from './mock';
+// import { mockBrandSyncDetails, mockCategorySynchronizationDetails } from './mock';
 import { DbSBrand, DbSCategory, DbTBrand, DbTCategory, FreshSBrand, FreshSCategory, FreshTBrand, FreshTCategory } from './types';
 
 const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
@@ -8,7 +8,7 @@ const isStandAlone = (process.env.REACT_APP_IS_STAND_ALONE && process.env.REACT_
 
 export async function getBrandSynchronizationDetails(): Promise<any> {
   try {
-    if (isStandAlone) return mockBrandSyncDetails;
+    // if (isStandAlone) return mockBrandSyncDetails;
 
     const response = await axios.get(`${apiUrl}/synchronization/brand`);
     return response.data;
@@ -20,7 +20,7 @@ export async function getBrandSynchronizationDetails(): Promise<any> {
 
 export async function getSmBrandSyncDetails(): Promise<any> {
   try {
-    if (isStandAlone) return mockBrandSyncDetails;
+    // if (isStandAlone) return mockBrandSyncDetails;
 
     const response = await axios.get(`${apiUrl}/synchronization/sm/brand`);
     return response.data;
@@ -32,7 +32,7 @@ export async function getSmBrandSyncDetails(): Promise<any> {
 
 export async function getSmCategorySyncDetails(): Promise<any> {
   try {
-    if (isStandAlone) return mockBrandSyncDetails;
+    // if (isStandAlone) return mockBrandSyncDetails;
 
     const response = await axios.get(`${apiUrl}/synchronization/sm/category`);
     return response.data;
@@ -44,7 +44,7 @@ export async function getSmCategorySyncDetails(): Promise<any> {
 
 export async function getTrayBrandSyncDetails(): Promise<any> {
   try {
-    if (isStandAlone) return mockBrandSyncDetails;
+    // if (isStandAlone) return mockBrandSyncDetails;
 
     const response = await axios.get(`${apiUrl}/synchronization/tray/brand`);
     return response.data;
@@ -210,9 +210,45 @@ export async function deleteTBrandDetails(id: number) {
   }
 }
 
+export async function correlateBrands({ sId, tId }: { sId: number, tId: number }) {
+  try {
+    const updatedDbBrand = await axios.put(`${apiUrl}/synchronization/brand`, { sId, tId });
+    return updatedDbBrand.data;
+  } catch (error) {
+    log.error(`Failed to update Brand Map with error: ${error}`);
+  }
+}
+
+export async function correlateCategories({ sId, tId }: { sId: number, tId: number }) {
+  try {
+    const updatedRecord = await axios.put(`${apiUrl}/synchronization/category`, { sId, tId });
+    return updatedRecord.data;
+  } catch (error) {
+    log.error(`Failed to update Category Map with error: ${error}`);
+  }
+}
+
+export async function unrelateBrands({ sId }: { sId: number }) {
+  try {
+    const result = await axios.delete(`${apiUrl}/synchronization/brand/${sId}`);
+    return result.data;
+  } catch (error) {
+    log.error(`Failed to unrelate Brands with error: ${error}`);
+  }
+}
+
+export async function unrelateCategories({ sId }: { sId: number }) {
+  try {
+    const result = await axios.delete(`${apiUrl}/synchronization/category/${sId}`);
+    return result.data;
+  } catch (error) {
+    log.error(`Failed to unrelate Categories with error: ${error}`);
+  }
+}
+
 export async function getCategorySynchronizationDetails(): Promise<any> {
   try {
-    if (isStandAlone) return mockCategorySynchronizationDetails;
+    // if (isStandAlone) return mockCategorySynchronizationDetails;
 
     const response = await axios.get(`${apiUrl}/synchronization/category`);
     return response.data;

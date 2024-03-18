@@ -1,9 +1,39 @@
 //TOO delete this one once calls simplified
-export interface BrandSynchronizationDetails {
-  apiSmBrands: FreshSBrand[];
-  dbSmBrands: DbSBrand[],
-  apiTrayBrands: FreshTBrand[],
-  dbTrayBrands: DbTBrand[],
+export interface BrandSyncData {
+  sId: number;
+  sBrandId: number;
+  sName: string;
+  sActive: number;
+  tId: number;
+  tBrandId: number;
+  tBrand: string;
+  tActive: number;
+}
+
+export interface CategorySyncData {
+  sId: number;
+  sCategoryId: number;
+  sName: string;
+  sFsActive: number;
+  tId: number;
+  tCategoryId: number;
+  tName: string;
+  tFsActive: number;
+}
+
+export interface BrandSyncDetails {
+  brandSyncData: BrandSyncData[];
+  unsyncedTBrands: DbTBrand[];
+}
+
+export interface BrandSyncResult {
+  brandSyncData: BrandSyncData;
+  unsyncedTBrand: DbTBrand;
+}
+
+export interface CategorySyncResult {
+  categorySyncData: CategorySyncData;
+  unsyncedTCategory: DbTCategory;
 }
 
 export interface SmBrandSyncDetails {
@@ -16,11 +46,9 @@ export interface TrayBrandSyncDetails {
   dbTrayBrands: DbTBrand[],
 }
 
-export interface CategorySynchronizationDetails {
-  apiSmCategories: FreshSCategory[];
-  dbSmCategories: DbSCategory[];
-  apiTrayCategories: FreshTCategory[];
-  dbTrayCategories: DbTCategory[];
+export interface CategorySyncDetails {
+  categorySyncData: CategorySyncData[];
+  unsyncedTCategories: DbTCategory[];
 }
 
 export interface SmCategorySyncDetails {
