@@ -1,29 +1,27 @@
 import { useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight, faBan } from '@fortawesome/free-solid-svg-icons';
-import { faCircleCheck, faTrashCan } from '@fortawesome/free-regular-svg-icons';
+import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Message } from 'primereact/message';
 import { useNavigate } from 'react-router-dom';
-import { getBrandSynchronizationDetails, insertSBrandDetails, insertTBrandDetails, updateSBrandDetails, updateTBrandDetails } from '../../../api/api';
-import { BrandSynchronizationDetails, DbSBrand, DbTBrand, FreshSBrand, FreshTBrand } from '../../../api/types';
+import { correlateBrands, getBrandSynchronizationDetails, unrelateBrands } from '../../../api/api';
+import { BrandSyncData, BrandSyncDetails, BrandSyncResult, DbTBrand } from '../../../api/types';
 import BackLink from '../../../components/BackLink';
 import Spinner from '../../../components/Spinner';
 
 const BrandSyncPapge: React.FC = () => {
-  const [apiSmBrands, setApiSmBrands] = useState<FreshSBrand[] | null>(null);
-  const [dbSmBrands, setDbSmBrands] = useState<DbSBrand[] | null>(null);
-  const [apiTrayBrands, setApiTrayBrands] = useState<FreshTBrand[] | null>(null);
-  const [dbTrayBrands, setDbTrayBrands] = useState<DbTBrand[] | null>(null);
+  const [brandSyncData, setBrandSyncData] = useState<BrandSyncData[] | null>(null);
+  const [unsyncedTBrands, setUnsyncedTBrands] = useState<DbTBrand[] | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [selectedFarmerId, setSelectedFarmerId] = useState<string>();
 
   const navigate = useNavigate();
 
   const fetchSyncData = async () => {
     setIsLoading(true);
-    const response: BrandSynchronizationDetails = await getBrandSynchronizationDetails();
+    const response: BrandSyncDetails = await getBrandSynchronizationDetails();
     setIsLoading(false);
 
     if (!response) {
@@ -32,10 +30,8 @@ const BrandSyncPapge: React.FC = () => {
       return;
     }
 
-    setApiSmBrands(response.apiSmBrands);
-    setDbSmBrands(response.dbSmBrands);
-    setApiTrayBrands(response.apiTrayBrands);
-    setDbTrayBrands(response.dbTrayBrands);
+    setBrandSyncData(response.brandSyncData);
+    setUnsyncedTBrands(response.unsyncedTBrands);
   };
 
   const isMounted = useRef(true);
@@ -50,88 +46,58 @@ const BrandSyncPapge: React.FC = () => {
   }, []);
 
 
-  const upsertSBrand = async (apiBrand: FreshSBrand) => {
-    setErrorMsg(null);
-    // check exising brand
-    const existingBrand = dbSmBrands?.find((dbBrand) => dbBrand.brandId === +apiBrand.id);
-    try {
-      if (existingBrand) {
-        // update
-        const updatedDbBrand = await updateSBrandDetails(apiBrand);
-        console.log('updatedDbBrand', JSON.stringify(updatedDbBrand));
-
-        if (updatedDbBrand) {
-          // replace element from the array with the updated one
-          const index = dbSmBrands?.findIndex((dbBrand) => dbBrand.brandId === updatedDbBrand.brandId);
-          if (index !== undefined && index !== null && index !== -1) {
-            dbSmBrands?.splice(index, 1);
-            console.log('dbSmBrands splice ', dbSmBrands);
-            if (updatedDbBrand && dbSmBrands) {
-              const newDbSmBrands = [...dbSmBrands, updatedDbBrand];
-              setDbSmBrands(newDbSmBrands.sort((a, b) => a.brandId - b.brandId));
-              return;
-            }
-          }
-        }
-      } else {
-        // insert
-        const insertDbBrand = await insertSBrandDetails(apiBrand);
-        if (insertDbBrand && dbSmBrands) {
-          // sort dbSmBrands by brandId
-          const newBrands = [...dbSmBrands, insertDbBrand];
-          setDbSmBrands(newBrands.sort((a, b) => a.brandId - b.brandId));
-          return;
-        }
-      }
-      // set an error message in the state if we get here
-      setErrorMsg('Error saving SM brand');
-
-      // await fetchSyncData();
-    } catch (error) {
-      // set an error message in the state
-      setErrorMsg('Error saving SM brand');
-    }
+  const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedFarmerId(e.target.value);
   };
 
-  const upsertTBrand = async (apiBrand: FreshTBrand) => {
+  const correlateTBrand = async (tId: number, tBrandId: number, tBrandName: string) => {
     setErrorMsg(null);
-    const existingBrand = dbTrayBrands?.find((dbBrand) => {
-      // apiBrand fields type are changed to string
-      return dbBrand.brandId === +apiBrand.id; // convert apiBrand.id to number
-    });
-    try {
-      if (existingBrand) {
-        // update
-        const updatedDbBrand = await updateTBrandDetails(apiBrand);
-        if (updatedDbBrand) {
-          // replace element from the array with the updated one
-          const index = dbTrayBrands?.findIndex((dbBrand) => dbBrand.brandId === updatedDbBrand.brandId);
-          if (index !== undefined && index !== null && index !== -1) {
-            let newDbTrayBrands = dbTrayBrands?.splice(index, 1);
-            if (updatedDbBrand && newDbTrayBrands) {
-              newDbTrayBrands = [...newDbTrayBrands, updatedDbBrand];
-              setDbTrayBrands(newDbTrayBrands.sort((a, b) => a.brandId - b.brandId));
-              return;
-            }
+    if (!selectedFarmerId) return;
+    await correlateBrands({ sId: Number.parseInt(selectedFarmerId, 0), tId });
+    if (brandSyncData) {
+      // find the brand with sId and update the tBrandId
+      const syncBrand = brandSyncData.find((brand) => brand.sId === Number.parseInt(selectedFarmerId, 0));
+      // find the not mapped tBrand by tBrandId and remove it from the list
+      unsyncedTBrands?.splice(unsyncedTBrands?.findIndex((brand) => brand.brandId === tBrandId), 1);
+      setUnsyncedTBrands(unsyncedTBrands);
+      if (syncBrand) {
+        syncBrand.tBrandId = tBrandId;
+        syncBrand.tBrand = tBrandName;
+        setBrandSyncData([...brandSyncData].sort((a, b) => a.sBrandId - b.sBrandId));
+        setSelectedFarmerId(undefined);
+        return;
+      }
+    }
+    setErrorMsg('Failed to correlate brands');
+  };
+
+  const unrelateTBrand = async (sId: number) => {
+    setErrorMsg(null);
+    const brandSyncResult: BrandSyncResult = await unrelateBrands({ sId });
+    if (brandSyncResult) {
+      if (brandSyncData) {
+        // 
+        // const syncBrand = brandSyncData.find((brand) => brand.sId === sId);
+        const index = brandSyncData.findIndex((brand) => brand.sId === sId)
+        if (index !== undefined && index !== null && index !== -1) {
+          // remove old
+          brandSyncData.splice(index, 1);
+          if (brandSyncResult.brandSyncData) {
+            // add new one
+            const newBrandSyncData = [...brandSyncData, brandSyncResult.brandSyncData];
+            setBrandSyncData(newBrandSyncData.sort((a, b) => a.sBrandId - b.sBrandId));
           }
         }
-      } else {
-        // insert
-        const insertDbBrand = await insertTBrandDetails(apiBrand);
-        if (insertDbBrand && dbTrayBrands) {
-          // sort dbTrayBrands by brandId
-          const newBrands = [...dbTrayBrands, insertDbBrand];
-          setDbTrayBrands(newBrands.sort((a, b) => a.brandId - b.brandId));
-          return;
-        }
       }
-
-      // set an error message in the state if we get here
-      setErrorMsg('Error saving Tray brand');
-    } catch (error) {
-      setErrorMsg('Error saving Tray brand');
+      if (unsyncedTBrands) {
+        const newUnsyncedTBrand = brandSyncResult.unsyncedTBrand;
+        const newUnsyncedTBrands = [...unsyncedTBrands, newUnsyncedTBrand];
+        setUnsyncedTBrands(newUnsyncedTBrands.sort((a, b) => a.brandId - b.brandId));
+        return;
+      }
     }
-  };
+    setErrorMsg('Failed to unrelate brands');
+  }
 
   return (
     <>
@@ -141,16 +107,16 @@ const BrandSyncPapge: React.FC = () => {
       {isLoading ? <Spinner /> :
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
           <div style={{ minHeight: '50vh', maxHeight: '50vh' }}>
-            <h2 className="my-table-h2">Market Place Brands</h2>
-            {apiSmBrands && (
-              <DataTable className="my-datatable" value={apiSmBrands} header="SM Brands">
-                <Column field="id" header="ID"></Column>
-                <Column field="name" header="Name"></Column>
+            <h2 className="my-table-h2">Tray Brands Not Mapped</h2>
+            {unsyncedTBrands && (
+              <DataTable className="my-datatable" value={unsyncedTBrands}>
+                <Column field="brandId" header="ID"></Column>
+                <Column field="brand" header="Brand"></Column>
                 <Column
                   field="action"
                   header="Action"
                   body={(rowData) => (
-                    <button onClick={() => upsertSBrand(rowData)}>
+                    <button onClick={() => correlateTBrand(rowData.id, rowData.brandId, rowData.brand)}>
                       <FontAwesomeIcon icon={faArrowRight} />
                     </button>
                   )}
@@ -160,109 +126,31 @@ const BrandSyncPapge: React.FC = () => {
             )}
           </div>
           <div style={{ minHeight: '50vh', maxHeight: '50vh' }}>
-            <h2 className="my-table-h2">FS Integrator Brands</h2>
-            {dbSmBrands && (
-              <DataTable className="my-datatable" value={dbSmBrands} header="SM Brands">
-                <Column field="brandId" header="ID"></Column>
-                <Column field="name" header="Name"></Column>
-                <Column field="active" header="Active" style={{ width: '15%' }}
-                  body={(rowData) => {
-                    return rowData.active ?
-                      <FontAwesomeIcon icon={faCircleCheck} />
-                      : <FontAwesomeIcon icon={faBan} />;
-                  }}></Column>
+            <h2 className="my-table-h2">Brand Map</h2>
+            {brandSyncData && (
+              <DataTable className="my-datatable" value={brandSyncData}>
                 <Column
-                  field="action"
-                  header="Action"
-                  body={(rowData) => {
-                    if (rowData.active === 1) {
-                      return (
-                        <>
-                          <button>
-                            <FontAwesomeIcon icon={faBan} />
-                          </button>
-                          <button>
-                            <FontAwesomeIcon icon={faTrashCan} />
-                          </button>
-                        </>
-                      );
-                    } else {
-                      return (
-                        <>
-                          <button>
-                            <FontAwesomeIcon icon={faCircleCheck} />
-                          </button>
-                          <button>
-                            <FontAwesomeIcon icon={faTrashCan} />
-                          </button>
-                        </>
-                      );
-                    }
-                  }}
-                  style={{ width: '20%' }}
-                ></Column>
-              </DataTable>
-            )}
-          </div>
-          <div style={{ minHeight: '50vh', maxHeight: '50vh' }}>
-            {apiTrayBrands && (
-              <DataTable className="my-datatable" value={apiTrayBrands} header="Tray Brands">
-                <Column field="id" header="ID"></Column>
-                <Column field="brand" header="Brand"></Column>
-                <Column
-                  field="action"
-                  header="Action"
+                  field="sId"
+                  header="Select"
                   body={(rowData) => (
-                    <button onClick={() => upsertTBrand(rowData)}>
-                      <FontAwesomeIcon icon={faArrowRight} />
-                    </button>
+                    rowData.tBrandId === null ? (
+                      <input
+                        type="radio"
+                        value={rowData.sId}
+                        checked={selectedFarmerId === String(rowData.sId)}
+                        onChange={handleRadioChange}
+                      />
+                    ) : (
+                      <button onClick={() => unrelateTBrand(rowData.sId)}>
+                        <FontAwesomeIcon icon={faArrowLeft} />
+                      </button>
+                    )
                   )}
-                  style={{ width: '15%' }}
-                ></Column>
-              </DataTable>
-            )}
-          </div>
-          <div style={{ minHeight: '50vh', maxHeight: '50vh' }}>
-            {dbTrayBrands && (
-              <DataTable className="my-datatable" value={dbTrayBrands} header="Tray Brands">
-                <Column field="brandId" header="ID"></Column>
-                <Column field="brand" header="Brand"></Column>
-                <Column field="active" header="Active" style={{ width: '15%' }}
-                  body={(rowData) => {
-                    return rowData.active ?
-                      <FontAwesomeIcon icon={faCircleCheck} />
-                      : <FontAwesomeIcon icon={faBan} />;
-                  }}></Column>
-                <Column
-                  field="action"
-                  header="Action"
-                  body={(rowData) => {
-                    if (rowData.active === 1) {
-                      return (
-                        <>
-                          <button>
-                            <FontAwesomeIcon icon={faBan} />
-                          </button>
-                          <button>
-                            <FontAwesomeIcon icon={faTrashCan} />
-                          </button>
-                        </>
-                      );
-                    } else {
-                      return (
-                        <>
-                          <button>
-                            <FontAwesomeIcon icon={faCircleCheck} />
-                          </button>
-                          <button>
-                            <FontAwesomeIcon icon={faTrashCan} />
-                          </button>
-                        </>
-                      );
-                    }
-                  }}
-                  style={{ width: '20%' }}
-                ></Column>
+                />
+                <Column field="sBrandId" header="Farmer Id"></Column>
+                <Column field="tBrandId" header="Tray Id"></Column>
+                <Column field="sName" header="Farmer Brand"></Column>
+                <Column field="tBrand" header="Tray Brand"></Column>
               </DataTable>
             )}
           </div>
